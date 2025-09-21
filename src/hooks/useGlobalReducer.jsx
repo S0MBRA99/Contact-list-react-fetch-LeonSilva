@@ -1,24 +1,23 @@
-// Import necessary hooks and functions from React.
-import { useContext, useReducer, createContext } from "react";
-import storeReducer, { initialStore } from "../store"  // Import the reducer and the initial state.
+import { createContext, useContext, useState } from "react";
 
-// Create a context to hold the global state of the application
-// We will call this global state the "store" to avoid confusion while using local states
-const StoreContext = createContext()
+const StoreContext = createContext() //createContext nos devuelve en el return un objeto con dos elementos del cual usaremos el Provider
+                                    //usamos entonces StoreContext.Provider y guardamos dentro de ese elemento otro objeto con los hooks,variables...
+                                    //que vayamos a usar en nuestras paginas(children)
+export function StoreProvider({children}){
+    const [contacts, setContacts]= useState([])
+    const [userName, setUserName] = useState("");
+    const [idContact,setIdContact] = useState()
 
-// Define a provider component that encapsulates the store and warps it in a context provider to 
-// broadcast the information throught all the app pages and components.
-export function StoreProvider({ children }) {
-    // Initialize reducer with the initial state.
-    const [store, dispatch] = useReducer(storeReducer, initialStore())
-    // Provide the store and dispatch method to all child components.
-    return <StoreContext.Provider value={{ store, dispatch }}>
-        {children}
-    </StoreContext.Provider>
+    return(
+        <StoreContext.Provider value={{contacts,setContacts,userName,setUserName,idContact,setIdContact}}> 
+            {children}
+        </StoreContext.Provider>
+    )
 }
 
-// Custom hook to access the global state and dispatch function.
-export default function useGlobalReducer() {
-    const { dispatch, store } = useContext(StoreContext)
-    return { dispatch, store };
+//useContext es una funcion que scrapea el objeto que metimos dentro de StoreContext.Provider por lo que al llamar a la funcion useStore obtenemos esos
+//objetos listos para ser usados con las respectivas actiualizaciones que se les haya dado
+
+export function useStore(){
+    return useContext(StoreContext)
 }

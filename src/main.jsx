@@ -5,12 +5,10 @@ import { RouterProvider } from "react-router-dom";  // Import RouterProvider to 
 import { router } from "./routes";  // Import the router configuration
 import { StoreProvider } from './hooks/useGlobalReducer';  // Import the StoreProvider for global state management
 
-const Main = () => {
+function Main(){
     return (
         <React.StrictMode>  
-            {/* Provide global state to all components */}
-            <StoreProvider> 
-                {/* Set up routing for the application */} 
+            <StoreProvider>
                 <RouterProvider router={router}>
                 </RouterProvider>
             </StoreProvider>
