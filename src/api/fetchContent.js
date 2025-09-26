@@ -1,4 +1,5 @@
 export function createContactUser(username) {
+  console.log(username)
   return fetch(`https://playground.4geeks.com/contact/agendas/${username}`, {
     method: "POST",
     body: JSON.stringify({
@@ -72,8 +73,8 @@ export function postAgendaContact(username, contactObj) {
     });
 }
 
-export function deleteContact(username, id) {
-  fetch(
+export async function deleteContact(username, id) {
+  return fetch(
     `https://playground.4geeks.com/contact/agendas/${username}/contacts/${id}`,
     {
       method: "DELETE",
@@ -89,7 +90,10 @@ export function deleteContact(username, id) {
       return response;
     })
 
-    .then((response) => console.log("contact was deleted correctly", response))
+    .then((response) => {
+      console.log("contact was deleted correctly", response)
+      return response
+    })
     .catch((error) => console.log(error));
 }
 
