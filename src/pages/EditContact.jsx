@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useStore } from "../hooks/useGlobalReducer";
+import useGlobalReducer from "../hooks/useGlobalReducer"
 import { putContact } from "../api/fetchContent";
 import { useNavigate } from "react-router-dom";
 
 function EditContact() {
-  const { userName, setUserName } = useStore();
-  const { contacts, setContacts } = useStore();
-  const { idContact, setIdContact } = useStore();
+  const {store, dispatch} = useGlobalReducer();
   const [contactObj, setContactObj] = useState({
     name: "",
     phone: "",
@@ -16,8 +14,8 @@ function EditContact() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (contacts && idContact) {
-      const foundContact = contacts.find((contact) => contact.id === idContact);
+    if (store.contacts && store.idContact) {
+      const foundContact = store.contacts.find((contact) => contact.id === store.idContact);
       if (foundContact) {
         setContactObj(foundContact);
       }
@@ -89,12 +87,18 @@ function EditContact() {
           className="mx-auto d-block mt-5 rounded-2"
           onClick={(e) => {
             e.preventDefault();
-            putContact(userName, idContact, contactObj).then((data) => {
-                const updateContact = contacts.map((contact)=>{
-                    return contact.id === idContact? data : contact
+            putContact(store.userName, store.idContact, contactObj).then((data) => {
+                const updateContact = store.contacts.map((contact)=>{
+                    return contact.id === store.idContact? data : contact
                 })
                 //console.log(updateContact)
-                setContacts(updateContact);
+                dispatch(
+                  {
+                    type:'setContacts',
+                    payload : {items: updateContact}
+                  }
+                )
+                //setContacts(updateContact);
                 navigate("/");
             });
             

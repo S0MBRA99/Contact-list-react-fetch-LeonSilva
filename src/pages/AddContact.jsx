@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useStore } from "../hooks/useGlobalReducer";
+import useGlobalReducer from "../hooks/useGlobalReducer"
 import { postAgendaContact } from "../api/fetchContent";
+import { useNavigate } from "react-router-dom";
 
 function AddContact() {
-  const { contacts, setContacts } = useStore();
-  const {userName, setUserName} = useStore();
+  const {store, dispatch} = useGlobalReducer();
+  const [showModal,setShowModal] = useState(false)
+  const navigate = useNavigate()
   const [contactObj, setContactObj] = useState({
     name: "",
     phone: "",
@@ -16,7 +18,7 @@ function AddContact() {
   return (
     <>
       <article className="w-50 border mx-auto py-5 mt-5 rounded-2">
-        <h1 className="fs-2 text-center py-4">ADD A NEW CONTACT</h1>
+        <h1 className="fs-2 text-center py-4 text-white">ADD A NEW CONTACT</h1>
         <form className="d-flex justify-content-center border w-50 mx-auto py-5 rounded-2 bg-dark">
           <div className="mt-3">
             <label htmlFor="nameInput" className="form-label"></label>
@@ -78,8 +80,14 @@ function AddContact() {
           className="mx-auto d-block mt-5 rounded-2"
           onClick={(e) => {
             e.preventDefault();
-            postAgendaContact(userName,contactObj).then((data)=>{
-              setContacts([...contacts,data])
+            postAgendaContact(store.userName,contactObj).then((data)=>{
+              setShowModal(true)
+              dispatch(
+                {
+                  type: 'setContacts',
+                  payload : {items:[...store.contacts,data]}
+                }
+              )
             })
             setContactObj({
               name: "",
@@ -91,6 +99,23 @@ function AddContact() {
         >
           Submit
         </button>
+        {showModal?
+              (
+                <div className="modal-style">
+                  <h2 className="text-center mt-5">Add another contact?</h2>
+                  <div className="d-flex justify-content-between">
+                    <button type= "button" className="mx-auto mt-5 rounded-2 btn btn-primary" onClick={()=>{
+                    setShowModal(false)
+                    navigate("/Add-Contact")
+                    }}>continue</button>
+                  <button type="button" className="mx-auto mt-5 rounded-2 btn btn-primary" onClick={()=>{
+                    setShowModal(false)
+                    navigate("/")
+                  }}>Go contacts</button>
+                  </div>
+                </div>
+              ):(null)
+            }
       </article>
     </>
   );

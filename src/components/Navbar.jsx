@@ -1,12 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useStore } from "../hooks/useGlobalReducer"; 
+import React,{useState} from "react";
+import { Link } from "react-router-dom"; 
 import { createContactUser } from "../api/fetchContent";
+import useGlobalReducer from "../hooks/useGlobalReducer"
 
 function Navbar() {
   const [isLoggin, setIsLogin] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const {userName, setUserName} = useStore("");
+  const {store, dispatch} = useGlobalReducer();
   let user = ''
 
   return (
@@ -36,7 +36,7 @@ function Navbar() {
                 to="/Add-Contact"
                 className="navbar link text-decoration-none text-white"
               >
-                Add contact
+                <button className="btn btn-light">Add contact</button>
               </Link>
             </li>
           </ul>
@@ -44,7 +44,7 @@ function Navbar() {
         <div>
           {!isLoggin ? (
             <>
-              <button type="button" className="me-4" onClick={() => setShowModal(true)}>
+              <button type="button" className="me-4 btn btn-light" onClick={() => setShowModal(true)}>
                 Loggin
               </button>
               {showModal ? (
@@ -58,7 +58,14 @@ function Navbar() {
                   />
                   <button type="button" className="d-block mx-auto mt-5 rounded-2 btn btn-primary" onClick={(e)=>{
                     e.preventDefault()
-                    setUserName(user)
+                    dispatch(
+                      {
+                        type:'setUserName',
+                        payload: {name:user}
+                      }
+                    ) 
+                    console.log(store.userName);
+                    
                     createContactUser(user)
                     //console.log(response)
                     setShowModal(false)
@@ -68,7 +75,7 @@ function Navbar() {
               ) : null}
             </>
           ) : (
-            <p className="me-4">WELCOME: {userName}</p>
+            <p className="me-4">WELCOME: {store.userName}</p> //añadir aqui el store.userName
           )}
         </div>
       </div>
